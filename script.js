@@ -189,7 +189,7 @@ document.addEventListener('keypress', function(event) {
 });
 
 // Prevent negative values in inputs
-princpalInput.addEventListener('input', function() {
+principalInput.addEventListener('input', function() {
     if (this.value < 0) this.value = '';
 });
 
