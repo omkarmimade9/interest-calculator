@@ -169,3 +169,128 @@ button {
         flex-direction: column;
     }
 }
+
+/* History Section Styles */
+.history-section {
+    margin-top: 40px;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.history-list {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.history-list h3 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.history-item {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.history-item:hover {
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+    border-color: #667eea;
+    transform: translateX(4px);
+}
+
+.history-details {
+    flex: 1;
+}
+
+.history-details p {
+    margin: 4px 0;
+    font-size: 13px;
+    color: #555;
+}
+
+.history-type {
+    color: #667eea;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.history-result {
+    color: #28a745;
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.history-time {
+    color: #999;
+    font-size: 11px;
+    margin-top: 5px !important;
+}
+
+.delete-btn {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    margin-left: 10px;
+    flex-shrink: 0;
+}
+
+.delete-btn:hover {
+    background: #ff5252;
+    transform: scale(1.1);
+}
+
+.no-history {
+    text-align: center;
+    color: #999;
+    padding: 20px;
+    font-style: italic;
+}
+
+.clear-history-btn {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.clear-history-btn:hover {
+    background: #ff5252;
+}
+
+/* Scrollbar styling */
+.history-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.history-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 3px;
+}
+
+.history-list::-webkit-scrollbar-thumb:hover {
+    background: #764ba2;
+}
