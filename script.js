@@ -6,9 +6,40 @@ const typeSelect = document.getElementById('type');
 const resultDiv = document.getElementById('result');
 const interestAmountSpan = document.getElementById('interestAmount');
 const totalAmountSpan = document.getElementById('totalAmount');
+const historyDiv = document.getElementById('history');
+
+// LocalStorage key
+const HISTORY_KEY = 'calculationHistory';
 
 // Initialize calculation history from localStorage
-let calculationHistory = JSON.parse(localStorage.getItem('calculationHistory')) || [];
+let calculationHistory = [];
+
+// Function to load history from localStorage
+function loadHistoryFromStorage() {
+    try {
+        const stored = localStorage.getItem(HISTORY_KEY);
+        if (stored) {
+            calculationHistory = JSON.parse(stored);
+            console.log('Loaded', calculationHistory.length, 'calculations from storage');
+        } else {
+            calculationHistory = [];
+        }
+    } catch (error) {
+        console.error('Error loading history from localStorage:', error);
+        calculationHistory = [];
+    }
+}
+
+// Function to save history to localStorage
+function saveHistoryToStorage() {
+    try {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(calculationHistory));
+        console.log('Saved', calculationHistory.length, 'calculations to storage');
+    } catch (error) {
+        console.error('Error saving history to localStorage:', error);
+        alert('Could not save history. Storage might be full.');
+    }
+}
 
 // Function to save calculation to history
 function saveToHistory(calculation) {
@@ -23,22 +54,24 @@ function saveToHistory(calculation) {
     if (calculationHistory.length > 20) {
         calculationHistory.pop();
     }
-    localStorage.setItem('calculationHistory', JSON.stringify(calculationHistory));
+    saveHistoryToStorage();
     displayHistory();
 }
 
 // Function to display calculation history
 function displayHistory() {
-    const historyContainer = document.getElementById('history');
-    if (!historyContainer) return;
+    if (!historyDiv) {
+        console.warn('History div not found');
+        return;
+    }
     
     if (calculationHistory.length === 0) {
-        historyContainer.innerHTML = '<p class="no-history">No calculation history yet</p>';
+        historyDiv.innerHTML = '<p class="no-history">No calculation history yet</p>';
         return;
     }
     
     let historyHTML = '<div class="history-list"><h3>Calculation History</h3>';
-    calculationHistory.forEach((entry, index) => {
+    calculationHistory.forEach((entry) => {
         historyHTML += `
             <div class="history-item" onclick="loadFromHistory(${entry.id})">
                 <div class="history-details">
@@ -47,12 +80,12 @@ function displayHistory() {
                     <p class="history-result">Interest: $${parseFloat(entry.interest).toFixed(2)} | Total: $${parseFloat(entry.total).toFixed(2)}</p>
                     <p class="history-time">${entry.timestamp}</p>
                 </div>
-                <button class="delete-btn" onclick="deleteHistory(${entry.id}, event)">✕</button>
+                <button class="delete-btn" onclick="deleteHistory(${entry.id}, event)">×</button>
             </div>
         `;
     });
-    historyHTML += '</div>';
-    historyContainer.innerHTML = historyHTML;
+    historyHTML += '<button class="clear-history-btn" onclick="clearAllHistory()">Clear All History</button></div>';
+    historyDiv.innerHTML = historyHTML;
 }
 
 // Function to load calculation from history
@@ -74,15 +107,15 @@ function loadFromHistory(id) {
 function deleteHistory(id, event) {
     event.stopPropagation();
     calculationHistory = calculationHistory.filter(e => e.id !== id);
-    localStorage.setItem('calculationHistory', JSON.stringify(calculationHistory));
+    saveHistoryToStorage();
     displayHistory();
 }
 
 // Function to clear all history
 function clearAllHistory() {
-    if (confirm('Are you sure you want to clear all calculation history?')) {
+    if (confirm('Are you sure you want to clear all calculation history? This action cannot be undone.')) {
         calculationHistory = [];
-        localStorage.removeItem('calculationHistory');
+        saveHistoryToStorage();
         displayHistory();
     }
 }
@@ -168,7 +201,37 @@ timeInput.addEventListener('input', function() {
     if (this.value < 0) this.value = '';
 });
 
-// Display history on page load
-window.addEventListener('load', function() {
+// Initialize history - Run on multiple events for maximum compatibility
+function initializeHistory() {
+    loadHistoryFromStorage();
     displayHistory();
+    console.log('History initialized - Total entries:', calculationHistory.length);
+}
+
+if (document.readyState === 'loading') {
+    // DOM is still loading
+    document.addEventListener('DOMContentLoaded', initializeHistory);
+} else {
+    // DOM is already loaded
+    initializeHistory();
+}
+
+// Also initialize on window load event
+window.addEventListener('load', initializeHistory);
+
+// Save history before unload (when closing tab/browser)
+window.addEventListener('beforeunload', function() {
+    saveHistoryToStorage();
+    console.log('History saved before unload');
 });
+
+// Additional safety: Save every 30 seconds
+setInterval(function() {
+    if (calculationHistory.length > 0) {
+        saveHistoryToStorage();
+    }
+}, 30000);
+
+console.log('Script loaded successfully');
+console.log('LocalStorage available:', typeof(Storage) !== 'undefined');
+console.log('LocalStorage size:', JSON.stringify(localStorage).length, 'bytes');
